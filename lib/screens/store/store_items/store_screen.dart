@@ -25,8 +25,11 @@ class StoreScreen extends StatelessWidget {
             padding: EdgeInsets.all(defaultPadding),
             child: Column(
               children: [
-                Header(
-                  title: "عناصر المتجر",
+                Padding(
+                  padding: const EdgeInsets.only(right:20.0),
+                  child: Header(
+                    title: "عناصر المتجر",
+                  ),
                 ),
                 SizedBox(height: defaultPadding),
                 Row(

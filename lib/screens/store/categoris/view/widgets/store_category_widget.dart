@@ -5,7 +5,6 @@ import 'package:anwer_shop_admin/screens/store/categoris/cubit/categories_state.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../resources/Managers/colors_manager.dart';
 
 class StoreCategoryItems extends StatelessWidget {
   const StoreCategoryItems({Key? key});
@@ -16,9 +15,12 @@ class StoreCategoryItems extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "عناصر المتجر",
-          style: Theme.of(context).textTheme.titleMedium,
+        Padding(
+          padding: const EdgeInsets.only(right:20.0),
+          child: Text(
+            "فئات المتجر",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         SizedBox(
           height: defaultPadding,

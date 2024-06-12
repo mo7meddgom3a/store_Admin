@@ -28,8 +28,11 @@ class CategoriesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Header(
-                  title: "الفئات",
+                Padding(
+                  padding: const EdgeInsets.only(right:20.0),
+                  child: Header(
+                    title: "الفئات",
+                  ),
                 ),
                 SizedBox(height: defaultPadding),
                 Row(

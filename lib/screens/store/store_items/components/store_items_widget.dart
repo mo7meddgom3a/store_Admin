@@ -19,9 +19,12 @@ class StoreItemsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "العناصر في المتجر",
-          style: Theme.of(context).textTheme.titleMedium,
+        Padding(
+          padding: const EdgeInsets.only(right:20.0),
+          child: Text(
+            "العناصر في المتجر",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         SizedBox(
           height: defaultPadding,

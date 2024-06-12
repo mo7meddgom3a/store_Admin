@@ -15,144 +15,148 @@ class AddItemsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AddStoreItemCubit>();
-    return BlocBuilder<AddStoreItemCubit, AddStoreItemState>(
-      builder: (context, state) {
-        return SizedBox(
-          width: MediaQuery.of(context).size.width * 0.3,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Form(
-                key: cubit.formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    CustomTextField(
-                      cubit: cubit,
-                      labelText: 'Product Name',
-                      controller: cubit.nameController,
-                    ),
-                    const SizedBox(height: 20),
-                    CustomTextField(
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: BlocBuilder<AddStoreItemCubit, AddStoreItemState>(
+        builder: (context, state) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: cubit.formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CustomTextField(
                         cubit: cubit,
-                        labelText: 'Price',
+                        labelText: 'اسم المنتج',
+                        controller: cubit.nameController,
+                      ),
+                      const SizedBox(height: 20),
+                      CustomTextField(
+                        cubit: cubit,
+                        labelText: 'السعر',
                         keyboardType: TextInputType.number,
                         controller: cubit.priceController,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                        ]),
-                    const SizedBox(height: 20),
-                    CustomTextField(
-                      cubit: cubit,
-                      labelText: 'Description',
-                      controller: cubit.descriptionController,
-                    ),
-                    const SizedBox(height: 20),
-                    CategoriesForm(
-                      cubit: StoreCubit(),
-                      onChanged: (value) {
-                        context.read<AddStoreItemCubit>().categoryValue = value;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    CustomTextField(
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      CustomTextField(
                         cubit: cubit,
-                        labelText: 'Quantity',
+                        labelText: 'الوصف',
+                        controller: cubit.descriptionController,
+                      ),
+                      const SizedBox(height: 20),
+                      CategoriesForm(
+                        cubit: StoreCubit(),
+                        onChanged: (value) {
+                          context.read<AddStoreItemCubit>().categoryValue = value;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      CustomTextField(
+                        cubit: cubit,
+                        labelText: 'الكمية',
                         keyboardType: TextInputType.number,
                         controller: cubit.productCount,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
-                        ]),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CustomCheckBox(
-                          title: 'Recommended',
-                          onChanged: (value) {
-                            context
-                                .read<AddStoreItemCubit>()
-                                .updateToRecommended(
-                                    documentId: value ?? false);
-                          },
-                        ),
-                        CustomCheckBox(
-                          title: 'Popular',
-                          onChanged: (value) {
-                            context
-                                .read<AddStoreItemCubit>()
-                                .updateToPopular(documentId: value ?? false);
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(100, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        backgroundColor: ColorManager.PrimaryColor,
+                        ],
                       ),
-                      onPressed: () {
-                        context.read<AddStoreItemCubit>().uploadImages();
-                      },
-                      child: const Text(
-                        'Upload Image',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    if (state.images != null && state.images!.isNotEmpty)
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: state.images!.map((image) {
-                          return Image.memory(
-                            image,
-                            width: 100,
-                            height: 100,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const SizedBox.shrink();
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CustomCheckBox(
+                            title: 'موصى به',
+                            onChanged: (value) {
+                              context
+                                  .read<AddStoreItemCubit>()
+                                  .updateToRecommended(documentId: value ?? false);
                             },
-                          );
-                        }).toList(),
+                          ),
+                          CustomCheckBox(
+                            title: 'شائع',
+                            onChanged: (value) {
+                              context
+                                  .read<AddStoreItemCubit>()
+                                  .updateToPopular(documentId: value ?? false);
+                            },
+                          ),
+                        ],
                       ),
-                    if (state.submission == Submission.loading)
-                      Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(100, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(100, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: ColorManager.PrimaryColor,
                         ),
-                        backgroundColor: Colors.lightGreenAccent,
-                      ),
-                      onPressed: () {
-                        if (cubit.formKey.currentState!.validate()) {
-                          cubit.submitForm(context);
-                        }
-                      },
-                      child: const Text(
-                        'Add Product',
-                        style: TextStyle(
-                          color: Colors.white,
+                        onPressed: () {
+                          context.read<AddStoreItemCubit>().uploadImages();
+                        },
+                        child: const Text(
+                          'رفع الصورة',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      if (state.images != null && state.images!.isNotEmpty)
+                        Wrap(
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: state.images!.map((image) {
+                            return Image.memory(
+                              image,
+                              width: 100,
+                              height: 100,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const SizedBox.shrink();
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      if (state.submission == Submission.loading)
+                        Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(100, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: Colors.lightGreenAccent,
+                        ),
+                        onPressed: () {
+                          if (cubit.formKey.currentState!.validate()) {
+                            cubit.submitForm(context);
+                          }
+                        },
+                        child: const Text(
+                          'إضافة المنتج',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

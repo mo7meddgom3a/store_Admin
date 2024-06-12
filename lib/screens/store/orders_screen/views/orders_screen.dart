@@ -1,4 +1,3 @@
-
 import 'package:anwer_shop_admin/screens/store/orders_screen/cubit/orders_cubit.dart';
 import 'package:anwer_shop_admin/screens/store/orders_screen/cubit/orders_state.dart';
 import 'package:flutter/material.dart';
@@ -14,45 +13,48 @@ class OrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => OrdersCubit()..fetchAllUsersOrders(),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(defaultPadding),
-          child: Column(
-            children: [
-              Header(
-                title: "Orders",
-              ),
-              Divider(),
-              Expanded(
-                child: BlocBuilder<OrdersCubit, OrdersState>(
-                  builder: (context, state) {
-                    if (state is OrdersLoaded) {
-                      if (state.orders.isEmpty) {
-                        return Center(
-                          child: Text("No Orders Found"),
-                        );
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(defaultPadding),
+            child: Column(
+              children: [
+                Header(
+                  title: "الطلبات",
+                ),
+                Divider(),
+                Expanded(
+                  child: BlocBuilder<OrdersCubit, OrdersState>(
+                    builder: (context, state) {
+                      if (state is OrdersLoaded) {
+                        if (state.orders.isEmpty) {
+                          return Center(
+                            child: Text("لا توجد طلبات"),
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemCount: state.orders.length,
+                            itemBuilder: (context, index) {
+                              return OrderCardWidget(
+                                index: index,
+                                state: state,
+                              );
+                            },
+                          );
+                        }
                       } else {
-                        return ListView.builder(
-                          itemCount: state.orders.length,
-                          itemBuilder: (context, index) {
-                            return OrderCardWidget(
-                              index: index,
-                              state: state,
-                            );
-                          },
+                        return Center(
+                          child: loadingIndicator(
+                            color: Colors.white,
+                          ),
                         );
                       }
-                    } else {
-                      return Center(
-                        child: loadingIndicator(
-                          color: Colors.white,
-                        ),
-                      );
-                    }
-                  },
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -84,11 +86,11 @@ class OrderCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Order ID: ${order.documentId}",
+                    "رقم الطلب: ${order.documentId}",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                    tooltip: "Download Order as PDF",
+                    tooltip: "تنزيل الطلب كملف PDF",
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(Colors.blue),
                     ),
@@ -105,9 +107,9 @@ class OrderCardWidget extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 8),
-              Text("Order Date: ${order.orderDate}"),
+              Text("تاريخ الطلب: ${order.orderDate}"),
               SizedBox(height: 8),
-              Text("User ID: ${order.userId}"),
+              Text("رقم المستخدم: ${order.userId}"),
               SizedBox(height: 8),
               Divider(),
               ListView.builder(
@@ -118,19 +120,19 @@ class OrderCardWidget extends StatelessWidget {
                   return ListTile(
                     title: Text("${product['name']}"),
                     subtitle: Text(
-                      "Price: ${product['price']} EGP | Quantity: ${product['productCount']}",
+                      "السعر: ${product['price']} جنيه | الكمية: ${product['productCount']}",
                     ),
                   );
                 },
               ),
               Divider(),
               ListTile(
-                title: Text("Shipping Address"),
+                title: Text("عنوان الشحن"),
                 subtitle: Text("${order.address}"),
                 trailing: Column(
                   children: [
                     Text(
-                      "UserPhoneNumber:",
+                      "رقم هاتف المستخدم:",
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                     Text(
@@ -142,12 +144,12 @@ class OrderCardWidget extends StatelessWidget {
               ),
               if (order.notes != null)
                 ListTile(
-                  title: Text("Notes"),
+                  title: Text("ملاحظات"),
                   subtitle: Text("${order.notes}"),
                 ),
               Divider(),
               ListTile(
-                title: Text("Location on map"),
+                title: Text("الموقع على الخريطة"),
                 subtitle: SelectableText(
                   order.mapLocation,
                   style: TextStyle(color: Colors.blue,),
@@ -159,7 +161,7 @@ class OrderCardWidget extends StatelessWidget {
                 children: [
                   Row(children: [
                     Text(
-                      "Order Status:",
+                      "حالة الطلب:",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 5),
@@ -167,9 +169,9 @@ class OrderCardWidget extends StatelessWidget {
                       "${order.status}",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: order.status == "Delivered"
+                          color: order.status == "تم التوصيل"
                               ? Colors.green
-                              : order.status == "Canceled"
+                              : order.status == "تم الإلغاء"
                               ? Colors.red
                               : Colors.blue),
                     ),
@@ -179,7 +181,7 @@ class OrderCardWidget extends StatelessWidget {
                     children: [
                       SizedBox(height: 5),
                       Text(
-                        "Total: ${order.totalPrice}",
+                        "الإجمالي: ${order.totalPrice}",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -199,10 +201,10 @@ class OrderCardWidget extends StatelessWidget {
                     onPressed: () {
                       context
                           .read<OrdersCubit>()
-                          .updateOrderStatus(order.documentId, "Accepted");
+                          .updateOrderStatus(order.documentId, "مقبول");
                     },
                     icon: Icon(Icons.check),
-                    label: Text("Accept Order"),
+                    label: Text("قبول الطلب"),
                     style: ButtonStyle(
                       maximumSize: MediaQuery.of(context).size.width > 600
                           ? WidgetStateProperty.all(Size(200, 50))
@@ -218,10 +220,10 @@ class OrderCardWidget extends StatelessWidget {
                     onPressed: () {
                       context
                           .read<OrdersCubit>()
-                          .updateOrderStatus(order.documentId, "Canceled");
+                          .updateOrderStatus(order.documentId, "تم الإلغاء");
                     },
                     icon: Icon(Icons.cancel),
-                    label: Text("Cancel Order"),
+                    label: Text("إلغاء الطلب"),
                     style: ButtonStyle(
                       maximumSize: MediaQuery.of(context).size.width > 600
                           ? WidgetStateProperty.all(Size(200, 50))
@@ -236,10 +238,10 @@ class OrderCardWidget extends StatelessWidget {
                     onPressed: () {
                       context
                           .read<OrdersCubit>()
-                          .updateOrderStatus(order.documentId, "Delivered");
+                          .updateOrderStatus(order.documentId, "تم التوصيل");
                     },
                     icon: Icon(Icons.local_shipping),
-                    label: Text("Delivered"),
+                    label: Text("تم التوصيل"),
                     style: ButtonStyle(
                       maximumSize: MediaQuery.of(context).size.width > 600
                           ? WidgetStateProperty.all(Size(200, 50))

@@ -1,4 +1,3 @@
-
 import 'package:anwer_shop_admin/resources/Utils/responsive.dart';
 import 'package:anwer_shop_admin/screens/dashboard/components/header.dart';
 import 'package:anwer_shop_admin/screens/store/store_items/components/add_items_widget.dart';
@@ -18,37 +17,40 @@ class StoreScreen extends StatelessWidget {
         BlocProvider(create: (context) => AddStoreItemCubit()),
         BlocProvider(create: (context) => StoreCubit()),
       ],
-      child: SafeArea(
-        child: SingleChildScrollView(
-          primary: false,
-          padding: EdgeInsets.all(defaultPadding),
-          child: Column(
-            children: [
-              Header(
-                title: "Store Items",
-              ),
-              SizedBox(height: defaultPadding),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        if (Responsive.isMobile(context))
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            primary: false,
+            padding: EdgeInsets.all(defaultPadding),
+            child: Column(
+              children: [
+                Header(
+                  title: "عناصر المتجر",
+                ),
+                SizedBox(height: defaultPadding),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          if (Responsive.isMobile(context))
+                            SizedBox(height: defaultPadding),
+                          AddItemsWidget(),
                           SizedBox(height: defaultPadding),
-                        AddItemsWidget(),
-                        SizedBox(height: defaultPadding),
-                        StoreItemsWidget(),
-                      ],
+                          StoreItemsWidget(),
+                        ],
+                      ),
                     ),
-                  ),
-                  if (!Responsive.isMobile(context))
-                    SizedBox(width: defaultPadding),
-                  // On Mobile means if the screen is less than 850 we don't want to show it
-                ],
-              )
-            ],
+                    if (!Responsive.isMobile(context))
+                      SizedBox(width: defaultPadding),
+                    // On Mobile means if the screen is less than 850 we don't want to show it
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

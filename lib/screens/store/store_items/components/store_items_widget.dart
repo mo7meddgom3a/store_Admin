@@ -1,4 +1,3 @@
-
 import 'package:anwer_shop_admin/constants.dart';
 import 'package:anwer_shop_admin/loader/loading_indicator.dart';
 import 'package:anwer_shop_admin/screens/store/categoris/cubit/categories_cubit.dart';
@@ -21,7 +20,7 @@ class StoreItemsWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Store Items",
+          "العناصر في المتجر",
           style: Theme.of(context).textTheme.titleMedium,
         ),
         SizedBox(
@@ -44,22 +43,22 @@ class StoreItemsWidget extends StatelessWidget {
                   // columnSpacing: defaultPadding,
                   columns: [
                     DataColumn(
-                      label: Text("Item Image"),
+                      label: Text("صورة المنتج"),
                     ),
                     DataColumn(
-                      label: Text("Item Name"),
+                      label: Text("اسم المنتج"),
                     ),
                     DataColumn(
-                      label: Text("Category"),
+                      label: Text("الفئة"),
                     ),
                     DataColumn(
-                      label: Text("Quantity"),
+                      label: Text("الكمية"),
                     ),
                     DataColumn(
-                      label: Text("Item Price"),
+                      label: Text("سعر المنتج"),
                     ),
                     DataColumn(
-                      label: Text("Actions"),
+                      label: Text("الإجراءات"),
                     ),
                   ],
                   rows: List.generate(
@@ -109,9 +108,9 @@ class StoreItemsWidget extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              title: Text("Delete Category"),
+                              title: Text("حذف الفئة"),
                               content: Text(
-                                  "Are you sure you want to delete this category?"),
+                                  "هل أنت متأكد أنك تريد حذف هذه الفئة؟"),
                               actions: [
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
@@ -123,7 +122,7 @@ class StoreItemsWidget extends StatelessWidget {
                                   onPressed: () {
                                     Navigator.pop(ctx);
                                   },
-                                  child: Text("Cancel",
+                                  child: Text("إلغاء",
                                       style: TextStyle(color: Colors.white)),
                                 ),
                                 ElevatedButton(
@@ -139,7 +138,7 @@ class StoreItemsWidget extends StatelessWidget {
                                         .deleteStoreItem(item.documentId);
                                     Navigator.pop(context);
                                   },
-                                  child: Text("Delete",
+                                  child: Text("حذف",
                                       style: TextStyle(color: Colors.white)),
                                 ),
                               ],
@@ -154,14 +153,14 @@ class StoreItemsWidget extends StatelessWidget {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text("Edit Item"),
+                            title: Text("تعديل المنتج"),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 TextFormField(
                                   initialValue: item.name,
                                   decoration: InputDecoration(
-                                    labelText: "Item Name",
+                                    labelText: "اسم المنتج",
                                   ),
                                   onChanged: (value) {
                                     item.name = value;
@@ -170,7 +169,7 @@ class StoreItemsWidget extends StatelessWidget {
                                 TextFormField(
                                   initialValue: "${item.price}",
                                   decoration: InputDecoration(
-                                    labelText: "Item Price",
+                                    labelText: "سعر المنتج",
                                   ),
                                   onChanged: (value) {
                                     item.price = num.parse(value);
@@ -194,13 +193,13 @@ class StoreItemsWidget extends StatelessWidget {
                                   MainAxisAlignment.spaceEvenly,
                                   children: [
                                     CustomCheckBox(
-                                      title: 'Recommended',
+                                      title: 'موصى به',
                                       onChanged: (value) {
                                         item.isRecommended = value ?? false;
                                       },
                                     ),
                                     CustomCheckBox(
-                                      title: 'Popular',
+                                      title: 'شائع',
                                       onChanged: (value) {
                                         item.isPopular = value ?? false;
                                       },
@@ -210,7 +209,7 @@ class StoreItemsWidget extends StatelessWidget {
                                 TextFormField(
                                   initialValue: "${item.Quantity}",
                                   decoration: InputDecoration(
-                                    labelText: "Quantity",
+                                    labelText: "الكمية",
                                   ),
                                   onChanged: (value) {
                                     item.Quantity = int.parse(value);
@@ -224,7 +223,7 @@ class StoreItemsWidget extends StatelessWidget {
                                   Navigator.pop(context);
                                 },
                                 child: Text(
-                                  "Cancel",
+                                  "إلغاء",
                                   style: TextStyle(color: Colors.red),
                                 ),
                               ),
@@ -237,7 +236,7 @@ class StoreItemsWidget extends StatelessWidget {
                                   Navigator.pop(context);
                                 },
                                 child: Text(
-                                  "Update",
+                                  "تحديث",
                                   style: TextStyle(color: Colors.green),
                                 ),
                               ),

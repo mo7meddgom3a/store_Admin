@@ -13,9 +13,9 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<StandardLayoutCubit>();
-    return Drawer(
+    return Scaffold(
       backgroundColor: bgColor,
-      child: ListView(
+      body: ListView(
         children: [
           DrawerHeader(
             child: Image.asset(
@@ -24,21 +24,21 @@ class SideMenu extends StatelessWidget {
             ),
           ),
           DrawerListTile(
-            title: "Store",
+            title: "المتجر",
             svgSrc: "assets/icons/menu_setting.svg",
             press: () {
               cubit.changeLayout(1);
             },
           ),
           DrawerListTile(
-            title: "Orders",
+            title: "الطلبات",
             svgSrc: "assets/icons/menu_task.svg",
             press: () {
               cubit.changeLayout(2);
             },
           ),
           DrawerListTile(
-            title: "Categories",
+            title: "الفئات",
             svgSrc: "assets/icons/menu_store.svg",
             press: () {
               cubit.changeLayout(3);
@@ -53,7 +53,6 @@ class SideMenu extends StatelessWidget {
 class DrawerListTile extends StatelessWidget {
   const DrawerListTile({
     Key? key,
-    // For selecting those three line once press "Command+D"
     required this.title,
     required this.svgSrc,
     required this.press,

@@ -1,12 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:anwer_shop_admin/resources/Managers/colors_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubit/add_categories_cubit.dart';
 
 class AddCategoryItems extends StatelessWidget {
-  const AddCategoryItems({super.key});
+  const AddCategoryItems({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class AddCategoryItems extends StatelessWidget {
                     TextFormField(
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'this field is required';
+                          return 'هذا الحقل مطلوب';
                         }
                         return null;
                       },
@@ -37,7 +38,7 @@ class AddCategoryItems extends StatelessWidget {
                           borderSide: const BorderSide(color: Colors.red),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        labelText: 'Category',
+                        labelText: 'الفئة',
                         labelStyle: const TextStyle(color: Colors.white),
                         enabledBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.white),
@@ -49,7 +50,6 @@ class AddCategoryItems extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -63,7 +63,7 @@ class AddCategoryItems extends StatelessWidget {
                         context.read<AddCategoriesItemCubit>().uploadImage();
                       },
                       child: const Text(
-                        'Upload Image',
+                        'تحميل الصورة',
                         style: TextStyle(
                           color: Colors.white,
                         ),
@@ -91,13 +91,14 @@ class AddCategoryItems extends StatelessWidget {
                         backgroundColor: Colors.lightGreenAccent,
                       ),
                       onPressed: () {
-                        if (cubit.formKey.currentState!.validate())
+                        if (cubit.formKey.currentState!.validate()) {
                           cubit.submitForm(context);
+                        }
                       },
                       child: const Text(
-                        'Add Category',
+                        'إضافة الفئة',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),

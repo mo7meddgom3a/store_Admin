@@ -1,4 +1,3 @@
-
 import 'package:anwer_shop_admin/controllers/MenuAppController.dart';
 import 'package:anwer_shop_admin/cubit/standard_layout/standard_layout_cubit.dart';
 import 'package:anwer_shop_admin/resources/Utils/responsive.dart';
@@ -14,7 +13,8 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: context.read<MenuAppController>().scaffoldKey,
-      drawer: SideMenu(),
+      // Use endDrawer instead of drawer to make the menu appear from the right
+      endDrawer: SideMenu(),
       body: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,18 +31,18 @@ class MainScreen extends StatelessWidget {
               flex: 5,
               child: BlocBuilder<StandardLayoutCubit, StandardLayoutState>(
                   builder: (context, state) {
-                print("state is ${state.runtimeType}");
-                switch (state.runtimeType) {
+                    print("state is ${state.runtimeType}");
+                    switch (state.runtimeType) {
 
-                  case StoreLayout:
+                      case StoreLayout:
+                        return StoreScreen();
+                      case Orders:
+                        return OrdersScreen();
+                      case Categories:
+                        return CategoriesScreen();
+                    }
                     return StoreScreen();
-                  case Orders:
-                    return OrdersScreen();
-                  case Categories:
-                    return CategoriesScreen();
-                }
-                return StoreScreen();
-              }),
+                  }),
             ),
           ],
         ),

@@ -14,13 +14,13 @@ class SideMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<StandardLayoutCubit>();
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: Colors.black,
       body: ListView(
+
         children: [
           DrawerHeader(
             child: Image.asset(
-              "assets/images/logo.png",
-              color: Colors.grey,
+              "assets/images/pets.png",
             ),
           ),
           DrawerListTile(
@@ -65,15 +65,15 @@ class DrawerListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: press,
-      horizontalTitleGap: 0.0,
+      horizontalTitleGap: 1.0,
       leading: SvgPicture.asset(
         svgSrc,
-        colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
-        height: 16,
+        colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        height: 20,
       ),
       title: Text(
         title,
-        style: TextStyle(color: Colors.white54),
+        style: TextStyle(color: Colors.white,fontSize: 20),
       ),
     );
   }

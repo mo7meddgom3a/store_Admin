@@ -46,16 +46,6 @@ class ProfileCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end, // Align from right to left
       children: [
-        if (!Responsive.isMobile(context))
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
-            child: Text("Store Admin"),
-          ),
-        Image.asset(
-          "assets/images/logo.png",
-          color: Colors.grey,
-          height: 38,
-        ),
       ],
     );
   }

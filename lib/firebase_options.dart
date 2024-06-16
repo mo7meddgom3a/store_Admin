@@ -51,12 +51,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCUl5YsrgRLZn7nqnvKstwB6-PwsKOu3D8',
-    appId: '1:491479929136:web:5a325c9779a489c7bcf8f5',
+    appId: '1:491479929136:web:26b60b689f5cdd27bcf8f5',
     messagingSenderId: '491479929136',
     projectId: 'shopsbank-405b5',
     authDomain: 'shopsbank-405b5.firebaseapp.com',
+    databaseURL: 'https://shopsbank-405b5-default-rtdb.firebaseio.com',
     storageBucket: 'shopsbank-405b5.appspot.com',
-    measurementId: 'G-0TQ4Y09J47',
+    measurementId: 'G-RV23130VN4',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

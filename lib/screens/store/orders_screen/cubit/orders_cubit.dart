@@ -70,7 +70,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     final pdf = pw.Document();
     final logoImage = pw.MemoryImage(
       Uint8List.fromList(
-        (await rootBundle.load('assets/logo.png')).buffer.asUint8List(),
+        (await rootBundle.load('assets/images/pets.png')).buffer.asUint8List(),
       ),
     );
 
@@ -100,7 +100,7 @@ class OrdersCubit extends Cubit<OrdersState> {
                     pw.Text(" ${productIndex + 1} - "),
                     pw.Expanded(child: pw.Text(" ${product['name']}")),
                     pw.Text(
-                      "Price: ${product['price']} EGP | Quantity: ${product['productCount']}",
+                      "Price: ${product['price']} SAR | Quantity: ${product['productCount']}",
                     ),
                   ],
                 );
@@ -127,7 +127,7 @@ class OrdersCubit extends Cubit<OrdersState> {
                   children: [
                     pw.SizedBox(height: 5),
                     pw.Text(
-                      "TotalPrice: ${order.totalPrice} EGP",
+                      "TotalPrice: ${order.totalPrice} SAR",
                       style: pw.TextStyle(
                         fontSize: 16,
                         fontWeight: pw.FontWeight.bold,

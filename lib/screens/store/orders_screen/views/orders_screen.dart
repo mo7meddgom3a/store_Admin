@@ -120,7 +120,7 @@ class OrderCardWidget extends StatelessWidget {
                   return ListTile(
                     title: Text("${product['name']}"),
                     subtitle: Text(
-                      "السعر: ${product['price']} جنيه | الكمية: ${product['productCount']}",
+                      "السعر: ${product['price']} ريال  سعودي | الكمية: ${product['productCount']}",
                     ),
                   );
                 },

@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Shop Admin Panel',
+          title: 'The Forest Admin Panel',
           theme: ThemeData.dark().copyWith(
             scaffoldBackgroundColor: bgColor,
             textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)

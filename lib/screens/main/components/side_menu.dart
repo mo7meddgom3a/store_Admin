@@ -65,13 +65,12 @@ class DrawerListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: press,
-      horizontalTitleGap: 1.0,
-      leading: SvgPicture.asset(
+      title: SvgPicture.asset(
         svgSrc,
         colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
         height: 20,
       ),
-      title: Text(
+      leading: Text(
         title,
         style: TextStyle(color: Colors.white,fontSize: 20),
       ),

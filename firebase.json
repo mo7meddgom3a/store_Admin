@@ -1,1 +1,18 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"shopsbank-405b5","configurations":{"web":"1:491479929136:web:5a325c9779a489c7bcf8f5","windows":"1:491479929136:web:26b60b689f5cdd27bcf8f5"}}}}}}
+{
+  "hosting": {
+    "site": "shopsbank-405b5",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+
+}

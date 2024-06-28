@@ -2,11 +2,11 @@
 import 'package:flutter/foundation.dart';
 
 class StoreState {
-  final Uint8List? image;
+  final List<Uint8List>? image;
 
   StoreState({this.image});
 
-  StoreState copyWith({Uint8List? image}) {
+  StoreState copyWith({List<Uint8List>? image}) {
     return StoreState(
       image: image ?? this.image,
     );
@@ -20,8 +20,11 @@ class StoreLoading extends StoreState {}
 class StoreLoaded extends StoreState {
   final List<StoreItem> items;
 
-  StoreLoaded({required this.items});
+  final List<StoreItem> filteredItems;
+
+  StoreLoaded({required this.filteredItems, required this.items});
 }
+
 
 class StoreError extends StoreState {}
 

@@ -1,13 +1,28 @@
-import 'package:anwer_shop_admin/screens/store/orders_screen/cubit/orders_cubit.dart';
-import 'package:anwer_shop_admin/screens/store/orders_screen/cubit/orders_state.dart';
+import 'package:anwer_shop_admin/constants.dart';
+import 'package:anwer_shop_admin/loader/loading_indicator.dart';
+import 'package:anwer_shop_admin/screens/store/orders_screen/models/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../constants.dart';
-import '../../../../loader/loading_indicator.dart';
+import 'package:anwer_shop_admin/screens/store/orders_screen/cubit/orders_cubit.dart';
+import 'package:anwer_shop_admin/screens/store/orders_screen/cubit/orders_state.dart';
 import '../../../dashboard/components/header.dart';
 
-class OrdersScreen extends StatelessWidget {
-  const OrdersScreen({Key? key});
+class OrdersScreen extends StatefulWidget {
+  const OrdersScreen({Key? key}) : super(key: key);
+
+  @override
+  _OrdersScreenState createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<OrdersCubit>().fetchAllUsersOrders();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,21 +39,40 @@ class OrdersScreen extends StatelessWidget {
                   title: "الطلبات",
                 ),
                 Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      labelText: 'بحث عن طلب',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
+                  ),
+                ),
                 Expanded(
                   child: BlocBuilder<OrdersCubit, OrdersState>(
                     builder: (context, state) {
                       if (state is OrdersLoaded) {
-                        if (state.orders.isEmpty) {
+                        var filteredOrders = state.orders.where((order) =>
+                        order.documentId.toLowerCase().contains(_searchQuery) ||
+                            order.userId.toLowerCase().contains(_searchQuery) ||
+                            order.status!.toLowerCase().contains(_searchQuery)).toList();
+
+                        if (filteredOrders.isEmpty) {
                           return Center(
                             child: Text("لا توجد طلبات"),
                           );
                         } else {
                           return ListView.builder(
-                            itemCount: state.orders.length,
+                            itemCount: filteredOrders.length,
                             itemBuilder: (context, index) {
                               return OrderCardWidget(
-                                index: index,
-                                state: state,
+                                order: filteredOrders[index],
                               );
                             },
                           );
@@ -63,15 +97,12 @@ class OrdersScreen extends StatelessWidget {
 }
 
 class OrderCardWidget extends StatelessWidget {
-  const OrderCardWidget({Key? key, required this.index, required this.state});
+  final OrderModel order;
 
-  final OrdersState state;
-  final int index;
+  const OrderCardWidget({Key? key, required this.order}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var order = state.orders[index];
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -95,9 +126,7 @@ class OrderCardWidget extends StatelessWidget {
                       backgroundColor: WidgetStateProperty.all(Colors.blue),
                     ),
                     onPressed: () {
-                      context
-                          .read<OrdersCubit>()
-                          .downloadOrderAsPdf(context, order);
+                      context.read<OrdersCubit>().downloadOrderAsPdf(context, order);
                     },
                     icon: Icon(
                       Icons.download,
@@ -199,9 +228,7 @@ class OrderCardWidget extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      context
-                          .read<OrdersCubit>()
-                          .updateOrderStatus(order.documentId, "مقبول");
+                      context.read<OrdersCubit>().updateOrderStatus(order.documentId, "مقبول");
                     },
                     icon: Icon(Icons.check),
                     label: Text("قبول الطلب"),
@@ -218,9 +245,7 @@ class OrderCardWidget extends StatelessWidget {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
-                      context
-                          .read<OrdersCubit>()
-                          .updateOrderStatus(order.documentId, "تم الإلغاء");
+                      context.read<OrdersCubit>().updateOrderStatus(order.documentId, "تم الإلغاء");
                     },
                     icon: Icon(Icons.cancel),
                     label: Text("إلغاء الطلب"),
@@ -236,9 +261,7 @@ class OrderCardWidget extends StatelessWidget {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
-                      context
-                          .read<OrdersCubit>()
-                          .updateOrderStatus(order.documentId, "تم التوصيل");
+                      context.read<OrdersCubit>().updateOrderStatus(order.documentId, "تم التوصيل");
                     },
                     icon: Icon(Icons.local_shipping),
                     label: Text("تم التوصيل"),

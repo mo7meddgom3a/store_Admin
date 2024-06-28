@@ -68,26 +68,35 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   Future<void> downloadOrderAsPdf(BuildContext context, OrderModel order) async {
     final pdf = pw.Document();
+
+    // Load the logo image
     final logoImage = pw.MemoryImage(
       Uint8List.fromList(
         (await rootBundle.load('assets/images/pets.png')).buffer.asUint8List(),
       ),
     );
 
+    // Load Arabic font
+    final arabicFont = pw.Font.ttf(
+      await rootBundle.load("assets/fonts/IBMPlexSansArabic-Regular.ttf"),
+    );
+
     pdf.addPage(pw.Page(
       pageFormat: pw_base.PdfPageFormat.a4,
+      textDirection: pw.TextDirection.rtl, // Set text direction to RTL
       build: (pw.Context context) {
         return pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Center(
-              child: pw.Image(logoImage, height: 50, width: 150),),
+              child: pw.Image(logoImage, height: 50, width: 150),
+            ),
             pw.SizedBox(height: 20),
-
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                pw.Text('Order ID: ${order.documentId}'),
-                pw.Text('Order Date: ${order.orderDate}'),
+                pw.Text('رقم الطلب: ${order.documentId}', style: pw.TextStyle(font: arabicFont)),
+                pw.Text('تاريخ الطلب: ${order.orderDate}', style: pw.TextStyle(font: arabicFont)),
               ],
             ),
             pw.Divider(),
@@ -97,10 +106,11 @@ class OrdersCubit extends Cubit<OrdersState> {
                 var product = order.products[productIndex];
                 return pw.Row(
                   children: [
-                    pw.Text(" ${productIndex + 1} - "),
-                    pw.Expanded(child: pw.Text(" ${product['name']}")),
+                    pw.Text("  - ${productIndex + 1}", style: pw.TextStyle(font: arabicFont)),
+                    pw.Expanded(child: pw.Text(" ${product['name']}", style: pw.TextStyle(font: arabicFont))),
                     pw.Text(
-                      "Price: ${product['price']} SAR | Quantity: ${product['productCount']}",
+                      "السعر : ${product['price']} ريال        |       الكمية : ${product['productCount']}",
+                      style: pw.TextStyle(font: arabicFont),
                     ),
                   ],
                 );
@@ -111,14 +121,13 @@ class OrdersCubit extends Cubit<OrdersState> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               mainAxisAlignment: pw.MainAxisAlignment.start,
               children: [
-                pw.Text("Shipping Address: ${order.address}"),
+                pw.Text("عنوان الشحن: ${order.address}", style: pw.TextStyle(font: arabicFont)),
                 pw.SizedBox(height: 10),
-                pw.Text("UserPhoneNumber: ${order.contactNumber}"),
+                pw.Text("رقم هاتف المستخدم: ${order.contactNumber}", style: pw.TextStyle(font: arabicFont)),
               ],
             ),
-
-            if(order.notes != null)
-              pw.Text("Notes: ${order.notes}") ,
+            if (order.notes != null)
+              pw.Text("ملاحظات: ${order.notes}", style: pw.TextStyle(font: arabicFont)),
             pw.Divider(),
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -127,25 +136,27 @@ class OrdersCubit extends Cubit<OrdersState> {
                   children: [
                     pw.SizedBox(height: 5),
                     pw.Text(
-                      "TotalPrice: ${order.totalPrice} SAR",
+                      "المبلغ الإجمالي: ${order.totalPrice} ريال",
                       style: pw.TextStyle(
                         fontSize: 16,
                         fontWeight: pw.FontWeight.bold,
                         color: pw_base.PdfColors.blue,
+                        font: arabicFont,
                       ),
                     ),
                     pw.SizedBox(height: 5),
                     pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.end,
-                        children:[
-                          pw.Text(
-                            "Signature: ..............",
-                            style: pw.TextStyle(
-                              fontSize: 16,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
+                      mainAxisAlignment: pw.MainAxisAlignment.end,
+                      children: [
+                        pw.Text(
+                          "التوقيع: ..............",
+                          style: pw.TextStyle(
+                            fontSize: 16,
+                            fontWeight: pw.FontWeight.bold,
+                            font: arabicFont,
                           ),
-                        ]
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -163,5 +174,4 @@ class OrdersCubit extends Cubit<OrdersState> {
       ..setAttribute('download', 'order_${order.documentId}.pdf')
       ..click();
     html.Url.revokeObjectUrl(url);
-  }
-}
+  }}

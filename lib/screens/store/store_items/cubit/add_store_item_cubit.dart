@@ -108,4 +108,10 @@ class AddStoreItemCubit extends Cubit<AddStoreItemState> {
   void updateToPopular({required bool documentId}) async {
     isPopularChecked = documentId;
   }
+
+  void removeImage(int index) {
+    List<Uint8List> updatedImages = state.images!;
+    updatedImages.removeAt(index);
+    emit(state.copyWith(images: updatedImages));
+  }
 }

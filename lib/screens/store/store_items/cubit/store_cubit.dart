@@ -12,9 +12,9 @@ import 'store_state.dart';
 class StoreCubit extends Cubit<StoreState> {
   StoreCubit() : super(StoreInitial());
 
-  // File? image;
-  // XFile? pickedFile;
-  // Uint8List? bytes;
+  File? image;
+  XFile? pickedFile;
+  Uint8List? bytes;
   String? categoryValue ;
 
   Stream loadStoreItems() {
@@ -34,7 +34,7 @@ class StoreCubit extends Cubit<StoreState> {
             Quantity: data['productCount'] ?? "",
           );
         }).toList();
-        emit(StoreLoaded(items: storeItems));
+        emit(StoreLoaded(items: storeItems , filteredItems: storeItems));
       });
       return Stream.empty();
     } catch (e) {
@@ -43,24 +43,41 @@ class StoreCubit extends Cubit<StoreState> {
     }
   }
 
-  // void uploadImage() async {
-  //   try {
-  //     final picker = ImagePicker();
-  //     pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  //     if (pickedFile != null) {
-  //       bytes = await pickedFile!.readAsBytes();
-  //       emit(state.copyWith(image: bytes));
-  //     } else {
-  //       emit(state.copyWith(image: null));
-  //     }
-  //   } catch (err) {
-  //     print(err);
-  //   }}
+  void searchStoreItems(String query) {
+    final currentState = state;
+    if (currentState is StoreLoaded) {
+      final filteredItems = currentState.items
+          .where((item) =>
+      item.name.toLowerCase().contains(query) ||
+          item.category!.toLowerCase().contains(query) ?? false)
+          .toList();
+      emit(StoreLoaded(items: currentState.items, filteredItems: filteredItems));
+    }
+  }
 
-  void updateStoreItem(StoreItem item) async{
+  updateStoreItem(StoreItem item) async {
     try {
+      List<String> imageUrls = [];
 
-      FirebaseFirestore.instance
+      if (state.image != null) {
+        for (int i = 0; i < state.image!.length; i++) {
+          final Reference storageRef = FirebaseStorage.instance
+              .ref()
+              .child('product_images')
+              .child('image_${i}_${DateTime.now().millisecondsSinceEpoch}.png');
+
+          final UploadTask uploadTask = storageRef.putData(state.image![i]);
+          TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
+          final String imageUrl = await snapshot.ref.getDownloadURL();
+          imageUrls.add(imageUrl);
+        }
+      } else {
+        imageUrls = item.imageUrl;
+        print(imageUrls);
+      }
+
+      // Update Firestore document with new item data and image URLs
+      await FirebaseFirestore.instance
           .collection('items')
           .doc(item.documentId)
           .update({
@@ -68,11 +85,13 @@ class StoreCubit extends Cubit<StoreState> {
         'price': item.price,
         'category': categoryValue,
         'productCount': item.Quantity,
-        "isRecommended": item.isRecommended,
-        "isPopular": item.isPopular,
+        'isRecommended': item.isRecommended,
+        'isPopular': item.isPopular,
+        'imageUrls': FieldValue.arrayUnion(imageUrls),
       });
+
     } catch (e) {
-      emit(StoreError());
+      emit(StoreError()); // Emit an error state or handle the error appropriately
     }
   }
 
@@ -82,5 +101,41 @@ class StoreCubit extends Cubit<StoreState> {
     } catch (e) {
       emit(StoreError());
     }
+  }
+
+  removeImageFromFireStore(String documentId, String imageUrl) async {
+    try {
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+      await FirebaseFirestore.instance.collection('items').doc(documentId).update({
+        'imageUrls': FieldValue.arrayRemove([imageUrl])
+      });
+    } catch (e) {
+      emit(StoreError());
+    }
+  }
+
+  void uploadImages() async {
+    try {
+      final picker = ImagePicker();
+      final List<XFile>? pickedFiles = await picker.pickMultiImage();
+      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+        List<Uint8List> imageBytesList = [];
+        for (XFile file in pickedFiles) {
+          Uint8List bytes = await file.readAsBytes();
+          imageBytesList.add(bytes);
+        }
+        emit(state.copyWith(image: imageBytesList));
+      } else {
+        emit(state.copyWith(image: null));
+      }
+    } catch (err) {
+      print(err);
+    }
+  }
+
+  void removeImage(int index) {
+    List<Uint8List> updatedImages = state.image!;
+    updatedImages.removeAt(index);
+    emit(state.copyWith(image: updatedImages));
   }
 }

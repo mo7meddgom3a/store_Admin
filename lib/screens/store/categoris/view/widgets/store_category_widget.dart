@@ -3,8 +3,8 @@ import 'package:anwer_shop_admin/loader/loading_indicator.dart';
 import 'package:anwer_shop_admin/screens/store/categoris/cubit/categories_cubit.dart';
 import 'package:anwer_shop_admin/screens/store/categoris/cubit/categories_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 class StoreCategoryItems extends StatelessWidget {
   const StoreCategoryItems({Key? key});
@@ -16,7 +16,7 @@ class StoreCategoryItems extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(right:20.0),
+          padding: const EdgeInsets.only(right: 20.0),
           child: Text(
             "فئات المتجر",
             style: Theme.of(context).textTheme.titleMedium,
@@ -78,10 +78,24 @@ class StoreCategoryItems extends StatelessWidget {
     return DataRow(
       cells: [
         DataCell(
-          Image.network(
-            item.imageUrl,
-            width: 100,
-            height: 100,
+          InkWell(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    content: Image.network(item.imageUrl,
+                        errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error);
+                    }),
+                  );
+                },
+              );
+            },
+            child: Image.network(item.imageUrl, width: 100, height: 100,
+                errorBuilder: (context, error, stackTrace) {
+              return SizedBox.shrink();
+            }),
           ),
         ),
         DataCell(Text(item.category)),
@@ -176,7 +190,7 @@ class EditCategoryDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("تحرير الفئة"),
+      title: Text("تعديل الفئة"),
       content: BlocBuilder<CategoriesCubit, CategoriesState>(
         builder: (context, state) {
           return Column(
@@ -194,6 +208,72 @@ class EditCategoryDialog extends StatelessWidget {
               SizedBox(
                 height: defaultPadding,
               ),
+              ElevatedButton(
+                onPressed: () async {
+                  await context.read<CategoriesCubit>().uploadImage();
+                },
+                child: Text("تحديث الصورة"),
+              ),
+              SizedBox(
+                height: defaultPadding,
+              ),
+              if (state.image != null && state.image!.isNotEmpty &&state.image != Uint8List(0))
+                Stack(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 5,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
+                        border: Border.all(color: Colors.grey, width: 1),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: state.image != null
+                            ? Image.memory(state.image!,
+                                width: 100, height: 100, fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                return Icon(Icons.error);
+                              })
+                            : Container(),
+                      ),
+                    ),
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: () {
+                          context.read<CategoriesCubit>().removeImage();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          padding: EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+              // display current image
+              Image.network(item.imageUrl, width: 100, height: 100,
+                  errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.error);
+              }),
             ],
           );
         },

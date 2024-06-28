@@ -1,6 +1,7 @@
 import 'package:anwer_shop_admin/constants.dart';
 import 'package:anwer_shop_admin/loader/loading_indicator.dart';
 import 'package:anwer_shop_admin/screens/store/categoris/cubit/categories_cubit.dart';
+import 'package:anwer_shop_admin/screens/store/store_items/cubit/add_store_item_cubit.dart';
 import 'package:anwer_shop_admin/screens/store/store_items/cubit/store_cubit.dart';
 import 'package:anwer_shop_admin/screens/store/store_items/cubit/store_state.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,9 @@ import '../widgets/categories_form.dart';
 import '../widgets/custom_check_box_widget.dart';
 
 class StoreItemsWidget extends StatelessWidget {
-  const StoreItemsWidget({super.key});
+  StoreItemsWidget({super.key});
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -20,22 +23,36 @@ class StoreItemsWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(right:20.0),
+          padding: const EdgeInsets.only(right: 20.0),
           child: Text(
             "العناصر في المتجر",
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        SizedBox(
-          height: defaultPadding,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            controller: _searchController,
+            textAlign: TextAlign.right, // Align text to the right
+            textDirection: TextDirection.rtl, // Set text direction to right-to-left
+            decoration: InputDecoration(
+              labelText: 'بحث عن منتج',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              context.read<StoreCubit>().searchStoreItems(value.toLowerCase());
+            },
+          ),
         ),
+        SizedBox(height: defaultPadding),
         BlocBuilder<StoreCubit, StoreState>(
           builder: (context, state) {
             if (state is StoreLoading) {
               return Center(
-                  child: loadingIndicator(
-                    color: Colors.white,
-                  ));
+                child: loadingIndicator(
+                  color: Colors.white,
+                ),
+              );
             } else if (state is StoreLoaded) {
               return SizedBox(
                 width: double.infinity,
@@ -43,30 +60,17 @@ class StoreItemsWidget extends StatelessWidget {
                   horizontalMargin: 50,
                   dataRowMinHeight: 100,
                   dataRowMaxHeight: 200,
-                  // columnSpacing: defaultPadding,
                   columns: [
-                    DataColumn(
-                      label: Text("صورة المنتج"),
-                    ),
-                    DataColumn(
-                      label: Text("اسم المنتج"),
-                    ),
-                    DataColumn(
-                      label: Text("الفئة"),
-                    ),
-                    DataColumn(
-                      label: Text("الكمية"),
-                    ),
-                    DataColumn(
-                      label: Text("سعر المنتج"),
-                    ),
-                    DataColumn(
-                      label: Text("الإجراءات"),
-                    ),
+                    DataColumn(label: Text("صورة المنتج")),
+                    DataColumn(label: Text("اسم المنتج")),
+                    DataColumn(label: Text("الفئة")),
+                    DataColumn(label: Text("الكمية")),
+                    DataColumn(label: Text("سعر المنتج")),
+                    DataColumn(label: Text("الإجراءات")),
                   ],
                   rows: List.generate(
-                    state.items.length,
-                        (index) => foundDataRow(state.items[index]),
+                    state.filteredItems.length,
+                        (index) => foundDataRow(state.filteredItems[index]),
                   ),
                 ),
               );
@@ -112,8 +116,8 @@ class StoreItemsWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               title: Text("حذف الفئة"),
-                              content: Text(
-                                  "هل أنت متأكد أنك تريد حذف هذه الفئة؟"),
+                              content:
+                              Text("هل أنت متأكد أنك تريد حذف هذه الفئة؟"),
                               actions: [
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
@@ -218,6 +222,203 @@ class StoreItemsWidget extends StatelessWidget {
                                     item.Quantity = int.parse(value);
                                   },
                                 ),
+                                SizedBox(height: 20),
+                                // add images
+                                BlocBuilder<StoreCubit,
+                                    StoreState>(
+                                  builder: (context, state) {
+                                    return Column(
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            context
+                                                .read<StoreCubit>()
+                                                .uploadImages();
+                                          },
+                                          child: Text("تحميل الصور"),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        if (state.image != null && state.image!.isNotEmpty)
+                                          Wrap(
+                                            spacing: 8.0,
+                                            runSpacing: 8.0,
+                                            children: state.image!.map((image) {
+                                              return Stack(
+                                                children: [
+                                                  Container(
+                                                    width: 100,
+                                                    height: 100,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black.withOpacity(0.1),
+                                                          blurRadius: 5,
+                                                          offset: Offset(0, 5),
+                                                        ),
+                                                      ],
+                                                      border: Border.all(color: Colors.grey, width: 1),
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      child: Image.memory(
+                                                        image,
+                                                        width: 100,
+                                                        height: 100,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context, error, stackTrace) {
+                                                          return const SizedBox.shrink();
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Positioned(
+                                                    top: 4,
+                                                    right: 4,
+                                                    child: GestureDetector(
+                                                      onTap: () {
+                                                        context.read<StoreCubit>().removeImage(
+                                                          context.read<StoreCubit>().state.image!.indexOf(image),
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.red,
+                                                          shape: BoxShape.circle,
+                                                        ),
+                                                        padding: EdgeInsets.all(4),
+                                                        child: Icon(
+                                                          Icons.close,
+                                                          color: Colors.white,
+                                                          size: 16,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }).toList(),
+                                          ),
+                                        if (state is StoreLoading)
+                                          Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        const SizedBox(height: 20),
+                                        Text("الصور الحالية"),
+                                        const SizedBox(height: 20),
+                                        SizedBox(
+                                          height: 100,
+                                          width: 200,
+                                          child: GestureDetector(
+                                            onHorizontalDragUpdate: (details) {
+                                              _scrollController.jumpTo(
+                                                _scrollController.offset -
+                                                    details.delta.dx,
+                                              );
+                                            },
+                                            child: Scrollbar(
+                                              controller: _scrollController,
+                                              thumbVisibility: true,
+                                              child: ListView.builder(
+                                                controller: _scrollController,
+                                                scrollDirection: Axis.horizontal,
+                                                itemCount: item.imageUrl.length,
+                                                itemBuilder: (context, index) {
+                                                  return Padding(
+                                                    padding: const EdgeInsets.only(right: 15.0, bottom: 15.0),
+                                                    child: Stack(
+                                                      children: [
+                                                        Container(
+                                                          width: 100,
+                                                          height: 100,
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(8),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Colors.black.withOpacity(0.1),
+                                                                blurRadius: 5,
+                                                                offset: Offset(0, 5),
+                                                              ),
+                                                            ],
+                                                            border: Border.all(color: Colors.grey, width: 1),
+                                                          ),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.circular(8),
+                                                            child: Image.network(
+                                                              item.imageUrl[index],
+                                                              width: 100,
+                                                              height: 100,
+                                                              fit: BoxFit.cover,
+                                                              errorBuilder: (context, error, stackTrace) {
+                                                                return const SizedBox.shrink();
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          top: 4,
+                                                          right: 4,
+                                                          child: GestureDetector(
+                                                            onTap: () {
+                                                              showDialog(
+                                                                context: context,
+                                                                builder: (context) {
+                                                                  return AlertDialog(
+                                                                    title: Text("حذف الصورة"),
+                                                                    content: Text("هل أنت متأكد أنك تريد حذف هذه الصورة من المتجر؟"),
+                                                                    actions: [
+                                                                      ElevatedButton(
+                                                                        onPressed: () {
+                                                                          Navigator.pop(context);
+                                                                        },
+                                                                        child: Text("إلغاء"),
+                                                                      ),
+                                                                      ElevatedButton(
+                                                                        onPressed: () async{
+                                                                          await context.read<StoreCubit>().removeImageFromFireStore(
+                                                                            item.documentId,
+                                                                            item.imageUrl[index],
+                                                                          );
+                                                                          Navigator.pop(context);
+                                                                          context.read<StoreCubit>().loadStoreItems();
+                                                                          item.imageUrl.removeAt(index);
+
+                                                                        },
+                                                                        child: Text("حذف"),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },
+                                                              );
+
+                                                            },
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                color: Colors.red,
+                                                                shape: BoxShape.circle,
+                                                              ),
+                                                              padding: EdgeInsets.all(4),
+                                                              child: Icon(
+                                                                Icons.close,
+                                                                color: Colors.white,
+                                                                size: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                // display the current images
                               ],
                             ),
                             actions: [
@@ -231,11 +432,14 @@ class StoreItemsWidget extends StatelessWidget {
                                 ),
                               ),
                               ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async{
                                   // Call the method to update the item
-                                  context
+                                  await context
                                       .read<StoreCubit>()
                                       .updateStoreItem(item);
+
+                                  // await context.read<StoreCubit>().addImagesToCurrentImagesFirestore(item.documentId);
+
                                   Navigator.pop(context);
                                 },
                                 child: Text(
@@ -287,13 +491,43 @@ class MyImageScrollWidget extends StatelessWidget {
                     : null,
               ),
               currentIndex < imageUrls.length
-                  ? Image.network(
-                imageUrls[currentIndex],
-                width: 70,
-                height: 70,
-                errorBuilder: (context, error, stackTrace) {
-                  return const SizedBox.shrink();
+                  ? InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        //scrollable with all images
+                        content: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              for (int i = 0; i < imageUrls.length; i++)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 38.0),
+                                  child: Image.network(
+                                    imageUrls[i],
+                                    errorBuilder:
+                                        (context, error, stackTrace) {
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
+                child: Image.network(
+                  imageUrls[currentIndex],
+                  width: 70,
+                  height: 70,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const SizedBox.shrink();
+                  },
+                ),
               )
                   : const SizedBox.shrink(),
               IconButton(

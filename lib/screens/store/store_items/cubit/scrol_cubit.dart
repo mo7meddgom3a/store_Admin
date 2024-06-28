@@ -8,9 +8,9 @@ class ImageScrollCubit extends Cubit<double> {
   void scroll(ScrollDirection direction, double maxScrollExtent) {
     double newPosition = state;
     if (direction == ScrollDirection.left) {
-      newPosition = (newPosition - 70).clamp(0, maxScrollExtent);
+      newPosition = (newPosition - 78).clamp(0, maxScrollExtent);
     } else if (direction == ScrollDirection.right) {
-      newPosition = (newPosition + 70).clamp(0, maxScrollExtent);
+      newPosition = (newPosition + 78).clamp(0, maxScrollExtent);
     }
     emit(newPosition);
   }

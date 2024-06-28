@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:anwer_shop_admin/screens/store/categoris/cubit/categories_state.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -58,7 +59,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     }
   }
 
-  void uploadImage() async {
+   uploadImage() async {
     try {
       final picker = ImagePicker();
       pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -75,12 +76,28 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
   updateCategoryItem(CategoriesItem item) async {
     try {
+    if (state.image != null) {
+
+      final Reference storageRef = FirebaseStorage.instance
+          .ref()
+          .child('product_images')
+          .child(pickedFile!.path);
+      final UploadTask uploadTask = storageRef.putData(state.image!);
+      TaskSnapshot snapshot = await uploadTask.whenComplete(() {
+      });
+      final String imageUrl = await snapshot.ref.getDownloadURL();
+
+
       FirebaseFirestore.instance
           .collection('storeCategories')
           .doc(item.documentId)
           .update({
         'name': item.category,
+        'imageUrl': imageUrl,
       });
+      emit(state.copyWith(image: Uint8List(0)));
+
+    }
     } catch (e) {
       emit(CategoriesError());
     }
@@ -95,5 +112,10 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     } catch (e) {
       emit(CategoriesError());
     }
+  }
+  void removeImage() {
+    Uint8List updatedImages = state.image!;
+    updatedImages = Uint8List.fromList([]);
+    emit(state.copyWith(image: updatedImages));
   }
 }

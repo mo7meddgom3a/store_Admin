@@ -26,3 +26,10 @@ class SignOutRequired extends SignInEvent {
 	@override
 	List<Object> get props => [];
 }
+
+class logout extends SignInEvent {
+	const logout();
+
+	@override
+	List<Object> get props => [];
+}

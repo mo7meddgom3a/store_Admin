@@ -102,7 +102,7 @@ class AddItemsWidget extends StatelessWidget {
                           context.read<AddStoreItemCubit>().uploadImages();
                         },
                         child: const Text(
-                          'رفع الصورة',
+                          'رفع الصور',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -114,13 +114,59 @@ class AddItemsWidget extends StatelessWidget {
                           spacing: 8.0,
                           runSpacing: 8.0,
                           children: state.images!.map((image) {
-                            return Image.memory(
-                              image,
-                              width: 100,
-                              height: 100,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const SizedBox.shrink();
-                              },
+                            return Stack(
+                              children: [
+                                Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+                                    border: Border.all(color: Colors.grey, width: 1),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.memory(
+                                      image,
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const SizedBox.shrink();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  right: 4,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      context.read<AddStoreItemCubit>().removeImage(
+                                        context.read<AddStoreItemCubit>().state.images!.indexOf(image),
+                                      );
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: EdgeInsets.all(4),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             );
                           }).toList(),
                         ),
@@ -145,7 +191,7 @@ class AddItemsWidget extends StatelessWidget {
                         child: const Text(
                           'إضافة المنتج',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                       ),

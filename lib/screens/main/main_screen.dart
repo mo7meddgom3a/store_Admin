@@ -2,6 +2,7 @@ import 'package:anwer_shop_admin/controllers/MenuAppController.dart';
 import 'package:anwer_shop_admin/cubit/standard_layout/standard_layout_cubit.dart';
 import 'package:anwer_shop_admin/resources/Utils/responsive.dart';
 import 'package:anwer_shop_admin/screens/store/categoris/view/categoris_screen.dart';
+import 'package:anwer_shop_admin/screens/store/orders_screen/cubit/orders_cubit.dart';
 import 'package:anwer_shop_admin/screens/store/orders_screen/views/orders_screen.dart';
 import 'package:anwer_shop_admin/screens/store/store_items/store_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,9 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: context.read<MenuAppController>().scaffoldKey,
+      key: context
+          .read<MenuAppController>()
+          .scaffoldKey,
       // Use endDrawer instead of drawer to make the menu appear from the right
       endDrawer: SideMenu(),
       body: SafeArea(
@@ -33,11 +36,17 @@ class MainScreen extends StatelessWidget {
                   builder: (context, state) {
                     print("state is ${state.runtimeType}");
                     switch (state.runtimeType) {
-
                       case StoreLayout:
                         return StoreScreen();
                       case Orders:
-                        return OrdersScreen();
+                        return MultiBlocProvider(
+                          providers: [
+                            BlocProvider<OrdersCubit>(
+                              create: (context) => OrdersCubit(),
+                            ),
+                                                      ],
+                          child: OrdersScreen(),
+                        );
                       case Categories:
                         return CategoriesScreen();
                     }
